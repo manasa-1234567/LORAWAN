@@ -1,0 +1,48 @@
+#include <lmic.h>
+#include <SPI.h>
+#include <LoRa.h>
+// Insert Device EUI here
+static const u1_t PROGMEM DEVEUI[8] = {0xCA, 0x55, 0x05, 0xD0, 0x7E, 0xD5, 0xB3, 0x70};
+void os_getDevEui (u1_t* buf) { memcpy_P(buf, DEVEUI, 8);}
+// Insert Application EUI here
+static const u1_t PROGMEM APPEUI[8] = {0x45, 0x76, 0xFC, 0x89, 0x45, 0x43, 0xAE, 0x70};
+void os_getArtEui (u1_t* buf) { memcpy_P(buf, APPEUI, 8);}
+// Insert App Key here
+static const u1_t PROGMEM APPKEY[16] = {0x1D, 0xD7, 0xDE, 0xD2, 0xB0, 0xBC, 0x14, 0x13, 0x83, 0x6D, 0xD5, 0x53, 0x81, 0x11, 0xDD, 0x45};
+void os_getDevKey (u1_t* buf) { memcpy_P(buf, APPKEY, 16);}
+void setup() 
+{
+  Serial.begin(9600);
+  while (!Serial);
+  Serial.println("LoRa Receiver");
+  if (!LoRa.begin(868E6)) {
+    Serial.println("Starting LoRa failed!");
+    while (1);
+  }
+}
+ 
+void loop() {
+  // try to parse packet
+  int packetSize = LoRa.parsePacket();
+  if (packetSize) 
+  {
+    // received a paket
+    Serial.println("");
+    Serial.println("...................................");
+    Serial.println("Received packet: ");
+    
+    // read packet
+    while (LoRa.available()) {
+      char incoming = (char)LoRa.read();
+      if (incoming == 'c')
+      {
+        Serial.print("Error");
+      }
+      else
+      {
+        Serial.print(incoming);
+      }
+      delay(10);
+    }
+  }
+}
